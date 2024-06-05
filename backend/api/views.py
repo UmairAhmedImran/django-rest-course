@@ -1,9 +1,10 @@
-import json
-from django.http import JsonResponse
-from django.forms.models import model_to_dict
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from products.models import Products
+from products.serializers import ProductSerializer
 
 
+@api_view(["GET"])
 def api_home(request, *args, **kwargs):
     # body = request.body
     # print(request.GET)
@@ -19,18 +20,15 @@ def api_home(request, *args, **kwargs):
     # data['headers'] = dict(request.headers)
     # data['content)type'] = request.content_type
 
-    model_data = Products.objects.all().order_by("?").first()
+    instance = Products.objects.all().order_by("?").first()
 
-    data = {}
-
-    if model_data:
+    if instance:
 
         # data['id'] = model_data.id
         # data['title'] = model_data.title
         # data['content'] = model_data.content
         # data['price'] = model_data.price
         # instead of all above we can write
-        data = model_to_dict(model_data, fields=[
-                             'id', 'title', 'price', 'content'])
+        data = ProductSerializer(instance).data
 
-    return JsonResponse(data)
+    return Response(data)
